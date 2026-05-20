@@ -1,11 +1,13 @@
 from Funciones import (
     calcular_total,
     calcular_porcentaje,
+    calcular_promedio,
+    buscar_indice_maximo,
+    buscar_menos_votados,
     filtrar_menores_a_porcentaje,
     filtrar_mayores_a_cantidad,
     filtrar_arriba_del_promedio,
-    buscar_menos_votado,
-    verificar_segunda_vuelta,
+    hay_segunda_vuelta,
 )
 
 
@@ -52,7 +54,8 @@ def mostrar_listado(votos):
 
 def mostrar_filtrados_menos(votos, limite):
     """Muestra los partidos con menos del 'limite'% del total y el acumulado."""
-    indices, cantidades, porcentajes = filtrar_menores_a_porcentaje(votos, limite)
+    total = calcular_total(votos)
+    indices = filtrar_menores_a_porcentaje(votos, limite)
     print("")
     print(f"----- PARTIDOS CON MENOS DEL {limite}% DE VOTOS -----")
     if len(indices) == 0:
@@ -61,15 +64,18 @@ def mostrar_filtrados_menos(votos, limite):
     acumulado = 0
     i = 0
     while i < len(indices):
-        print(f"Partido {indices[i] + 1}: {cantidades[i]} votos ({porcentajes[i]:.2f}%)")
-        acumulado = acumulado + porcentajes[i]
+        idx = indices[i]
+        porc = calcular_porcentaje(votos[idx], total)
+        print(f"Partido {idx + 1}: {votos[idx]} votos ({porc:.2f}%)")
+        acumulado = acumulado + porc
         i = i + 1
     print(f"Porcentaje acumulado de la busqueda: {acumulado:.2f}%")
 
 
 def mostrar_filtrados_mas(votos, limite):
     """Muestra los partidos con mas de 'limite' votos, mas suma, cantidad y promedio."""
-    indices, cantidades, porcentajes = filtrar_mayores_a_cantidad(votos, limite)
+    total = calcular_total(votos)
+    indices = filtrar_mayores_a_cantidad(votos, limite)
     print("")
     print(f"----- PARTIDOS CON MAS DE {limite} VOTOS -----")
     if len(indices) == 0:
@@ -78,8 +84,10 @@ def mostrar_filtrados_mas(votos, limite):
     suma = 0
     i = 0
     while i < len(indices):
-        print(f"Partido {indices[i] + 1}: {cantidades[i]} votos ({porcentajes[i]:.2f}%)")
-        suma = suma + cantidades[i]
+        idx = indices[i]
+        porc = calcular_porcentaje(votos[idx], total)
+        print(f"Partido {idx + 1}: {votos[idx]} votos ({porc:.2f}%)")
+        suma = suma + votos[idx]
         i = i + 1
     promedio_busqueda = suma / len(indices)
     print(f"Suma de votos: {suma}")
@@ -89,7 +97,9 @@ def mostrar_filtrados_mas(votos, limite):
 
 def mostrar_arriba_promedio(votos):
     """Muestra los partidos por encima del promedio y el porcentaje acumulado."""
-    indices, cantidades, porcentajes, promedio = filtrar_arriba_del_promedio(votos)
+    total = calcular_total(votos)
+    promedio = calcular_promedio(votos)
+    indices = filtrar_arriba_del_promedio(votos)
     print("")
     print("----- PARTIDOS POR ENCIMA DEL PROMEDIO -----")
     print(f"Promedio general de votos: {promedio:.2f}")
@@ -99,16 +109,19 @@ def mostrar_arriba_promedio(votos):
     acumulado = 0
     i = 0
     while i < len(indices):
-        print(f"Partido {indices[i] + 1}: {cantidades[i]} votos ({porcentajes[i]:.2f}%)")
-        acumulado = acumulado + porcentajes[i]
+        idx = indices[i]
+        porc = calcular_porcentaje(votos[idx], total)
+        print(f"Partido {idx + 1}: {votos[idx]} votos ({porc:.2f}%)")
+        acumulado = acumulado + porc
         i = i + 1
     print(f"Porcentaje acumulado de la busqueda: {acumulado:.2f}%")
 
 
 def mostrar_menos_votado(votos):
     """Muestra el o los partidos menos votados (contempla empates)."""
-    indices, minimo = buscar_menos_votado(votos)
     total = calcular_total(votos)
+    indices = buscar_menos_votados(votos)
+    minimo = votos[indices[0]]
     porc = calcular_porcentaje(minimo, total)
     print("")
     print("----- PARTIDO MENOS VOTADO -----")
@@ -124,18 +137,20 @@ def mostrar_menos_votado(votos):
 
 def mostrar_segunda_vuelta(votos):
     """Muestra si hay segunda vuelta y, si no, los datos del ganador."""
-    hay_segunda, indice, cantidad, porc = verificar_segunda_vuelta(votos)
+    total = calcular_total(votos)
     print("")
     print("----- VERIFICACION DE SEGUNDA VUELTA -----")
-    if hay_segunda:
+    if hay_segunda_vuelta(votos):
         print("Debe realizarse una segunda vuelta electoral")
     else:
+        indice = buscar_indice_maximo(votos)
+        porc = calcular_porcentaje(votos[indice], total)
         print("No debe realizarse una segunda vuelta electoral")
-        print(f"Partido ganador: Partido {indice + 1} con {cantidad} votos ({porc:.2f}%)")
+        print(f"Partido ganador: Partido {indice + 1} con {votos[indice]} votos ({porc:.2f}%)")
 
 
 def mostrar_nombres_ordenados(nombres):
-    """Imprime la lista de nombres de partidos ya ordenada alfabeticamente."""
+    """Imprime la lista de nombres ya ordenada alfabeticamente."""
     print("")
     print("----- PARTIDOS ORDENADOS ALFABETICAMENTE (A-Z) -----")
     i = 0
