@@ -1,4 +1,4 @@
-def pedir_entero_positivo(mensaje):
+def pedir_entero_positivo(mensaje: str) -> int:
     """Pide un entero mayor a cero y reintenta hasta recibir uno valido."""
     valido = False
     numero = 0
@@ -15,7 +15,7 @@ def pedir_entero_positivo(mensaje):
     return numero
 
 
-def pedir_opcion_menu():
+def pedir_opcion_menu() -> int:
     """Pide una opcion del menu entre 0 y 12, reintentando si es invalida."""
     valido = False
     opcion = -1

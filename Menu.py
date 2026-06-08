@@ -15,7 +15,7 @@ from Prints import (
 CANTIDAD_PARTIDOS = 5
 
 
-def ejecutar_menu():
+def ejecutar_menu() -> None:
     """Bucle principal: muestra el menu y ejecuta la opcion elegida por el usuario."""
     votos = []
     votos_cargados = False
